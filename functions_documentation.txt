@@ -1,0 +1,205 @@
+DOCUMENTATION: functions.py
+================================================================================
+
+OVERVIEW
+--------
+functions.py is a utility module for the Indian Bank Loan Approval Analysis and 
+Prediction project. It provides a comprehensive toolkit for machine learning 
+workflows, organized into six modular classes that handle different phases of a 
+classification pipeline for predicting loan approval risk.
+
+================================================================================
+
+CLASS DESCRIPTIONS
+
+1. LOADING CLASS
+----------------
+Purpose: Data ingestion and initial exploration
+
+Methods:
+  • load_data(data_path)
+    - Loads a JSON dataset and displays its shape and info
+    - Reports the number of applicants and attributes in the dataset
+    - Returns the loaded DataFrame
+    
+  • stats(dataset)
+    - Computes and displays distribution statistics for the target variable 
+      (Risk_Flag)
+    - Shows count of samples with "No Risk" (0) and "Risk" (1) labels
+    - Generates descriptive statistics for numeric columns
+    - Returns statistical summary
+
+================================================================================
+
+2. CLEANING CLASS
+-----------------
+Purpose: Data quality assessment and issue identification
+
+Methods:
+  • identify_issues(dataset)
+    - Detects and reports data quality problems in the dataset
+    - Identifies missing values per column
+    - Identifies duplicate rows
+    - Identifies null values per column
+    - Returns findings in a dictionary with keys: 'missing_values', 
+      'duplicate_rows', 'null_values'
+
+================================================================================
+
+3. PREPROCESSING CLASS
+----------------------
+Purpose: Feature engineering and data preparation for modeling
+
+Methods:
+  • prep(X, y, size)
+    - Prepares data for machine learning model training
+    - Converts categorical features to numeric using one-hot encoding 
+      (pd.get_dummies with drop_first=True)
+    - Splits data into train/test sets with configurable test size
+    - Standardizes features using StandardScaler for both training and test sets
+    - Uses random_state=42 for reproducibility
+    - Returns: X_train_scaled, X_test_scaled, y_train, y_test
+
+================================================================================
+
+4. ANALYSIS CLASS
+-----------------
+Purpose: Exploratory data analysis and visualization
+
+Methods:
+  • target_analysis(dataset)
+    - Visualizes the distribution of the target variable (Risk_Flag)
+    - Creates a count plot with pastel color palette
+    - Displays the plot
+
+  • category_by_target(column_list, dataset)
+    - Creates comparative count plots for categorical features grouped by 
+      risk flag
+    - Includes robust error handling for missing columns
+    - Validates that both the specified column and Risk_Flag exist
+    - Displays column data type and unique values for debugging
+    - Catches and reports any plotting errors
+    - Generates one count plot per categorical column
+
+  • numerical_analysis(column_list, dataset)
+    - Generates box plots to visualize relationships between numerical 
+      features and loan risk
+    - Creates one box plot per numerical column
+    - Risk_Flag is plotted on x-axis, numerical feature on y-axis
+    - Displays the plot
+
+================================================================================
+
+5. MODELING CLASS
+-----------------
+Purpose: Model training, evaluation, and comparison
+
+Methods:
+  • models(classifier, X_train, y_train, X_test, y_test)
+    - Trains a classifier on the training data
+    - Makes predictions on both training and test sets
+    - Calculates and reports training accuracy
+    - Calculates and reports test accuracy
+    - Returns the test set performance score
+
+  • cross_val(classifier, X_train, y_train)
+    - Performs 5-fold cross-validation with shuffled splits
+    - Uses random_state=42 for reproducibility
+    - Displays individual fold accuracy scores
+    - Displays mean accuracy across all folds
+    - Displays standard deviation of accuracy scores
+
+  • plot_curves(classifiers, X_train, y_train)
+    - Generates ROC (Receiver Operating Characteristic) curves
+    - Accepts a dictionary of multiple classifiers for comparison
+    - Plots ROC curve for each classifier with AUC metric
+    - Includes a diagonal baseline representing random guessing
+    - Labels each curve with classifier name and AUC value
+    - Displays the combined plot with legend
+
+================================================================================
+
+6. EVALUATION CLASS
+-------------------
+Purpose: Comprehensive model performance assessment
+
+Methods:
+  • Evaluate(classifier, X_test, y_test)
+    - Generates detailed evaluation metrics on test data
+    - Makes predictions on test set
+    - Calculates Precision: measures true positives among positive 
+      predictions
+    - Calculates Recall: measures true positives among actual positives
+    - Calculates F1-Score: harmonic mean of precision and recall
+    - Calculates ROC-AUC: area under the ROC curve
+    - Generates an annotated confusion matrix heatmap showing:
+      - True Negatives vs False Positives (top row)
+      - False Negatives vs True Positives (bottom row)
+    - Uses coolwarm color scheme with bold black annotations
+    - Returns all metrics in a dictionary: {'Precision': val, 'Recall': val, 
+      'F1-score': val, 'ROC-AUC': val}
+
+================================================================================
+
+DEPENDENCIES & IMPORTS
+----------------------
+Data Processing:
+  - pandas (pd): DataFrame operations and data manipulation
+  - numpy (np): Numerical operations (imported but not actively used)
+
+Machine Learning (scikit-learn):
+  - GridSearchCV: Hyperparameter tuning (imported but not used in current code)
+  - LogisticRegression: Linear classification model
+  - DecisionTreeClassifier: Tree-based classification model
+  - train_test_split: Data splitting
+  - cross_val_score: Cross-validation evaluation
+  - KFold: K-fold cross-validation strategy
+  - StandardScaler: Feature normalization
+  - Metrics: accuracy_score, confusion_matrix, precision_score, recall_score, 
+    f1_score, roc_auc_score, roc_curve, auc
+
+Visualization:
+  - matplotlib.pyplot (plt): Basic plotting functionality
+  - seaborn (sns): Statistical data visualization
+
+Gradient Boosting:
+  - XGBoost (xgb): Gradient boosting library
+  - XGBClassifier: XGBoost classification model
+
+================================================================================
+
+TYPICAL WORKFLOW PIPELINE
+--------------------------
+1. Load and explore data using Loading class
+2. Identify data quality issues using Cleaning class
+3. Prepare data for modeling using Preprocessing class
+4. Analyze relationships using Analysis class
+5. Train and compare models using Modeling class
+6. Evaluate final model performance using Evaluation class
+
+================================================================================
+
+USE CASE
+--------
+This module supports an end-to-end machine learning pipeline for predicting 
+loan approval risk based on applicant data. It handles the complete workflow 
+from initial data loading and exploration, through data cleaning and feature 
+engineering, to model training, comparison, and comprehensive evaluation.
+
+Target: Classify loan applicants as having low risk (0) or high risk (1) for 
+loan approval decisions.
+
+================================================================================
+
+NOTES & OBSERVATIONS
+--------------------
+• All classes use empty __init__ methods, indicating they are utility classes
+• Random state is set to 42 for reproducibility
+• Error handling is implemented in the Analysis.category_by_target method
+• The correlation_map method in Analysis class is commented out
+• StandardScaler ensures consistent scaling between train and test sets
+• ROC curves are generated on training data only in plot_curves method
+• zero_division parameter set to 1 in evaluation metrics to handle cases with 
+  no positive predictions
+
+================================================================================
